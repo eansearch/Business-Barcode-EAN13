@@ -27,24 +27,25 @@ from a list, given a preferred country list.
 =cut
 
 use strict;
-require Exporter;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);            
-@ISA         = qw/Exporter/;
+use base 'Exporter';
+
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT      = qw//;
 @EXPORT_OK   = qw/valid_barcode check_digit issuer_ccode best_barcode/;
 %EXPORT_TAGS = (all => [@EXPORT_OK]);
-$VERSION     = "0.06";
+$VERSION     = "1.00";
 
-# Private global HoL of country -> prefix lookup 
+# Private global HoL of country -> prefix lookup
 my %prefix;
 
 sub build_prefix {
-  while (<DATA>) {
-    chomp;
-    my ($ccode, $prefix) = split(/:/, $_, 2);      
-    # Allow the list to have .. and , modifiers to save typing!
-    push @{$prefix{$ccode}}, ($prefix =~ /\.\.|,/) ? eval $prefix : $prefix;  
-  }
+	while (<DATA>) {
+		chomp;
+		my ($ccode, $prefix) = split(/:/, $_, 2);
+
+		# Allow the list to have .. and , modifiers to save typing!
+		push @{ $prefix{$ccode} }, ($prefix =~ /\.\.|,/) ? eval $prefix : $prefix;
+	}
 }
 
 =head1 FUNCTIONS
@@ -60,33 +61,33 @@ properly formed.
 =cut
 
 sub check_digit {
-  my $stem = shift;
-  unless (_valid_stem($stem)) {
-    require Carp;
-    Carp::carp("Barcode stems should be 12 digits");
-    return undef;
-  }
-  return undef unless _valid_stem($stem);
-  return _check_digit($stem);
+	my $stem = shift;
+	unless (_valid_stem($stem)) {
+		require Carp;
+		Carp::carp("Barcode stems should be 12 digits");
+		return undef;
+	}
+	return undef unless _valid_stem($stem);
+	return _check_digit($stem);
 }
 
 #-------------------------------------------------------------------------
 # The specification for an EAN-13 barcode is described at
 #  http://www.mecsw.com/specs/ean_13.html
-# The check_digit is basically the number which, when added to 3 times the 
-# sum of the odd-position numbers plus the sum of the even-position 
+# The check_digit is basically the number which, when added to 3 times the
+# sum of the odd-position numbers plus the sum of the even-position
 # numbers gives you 10! A better explanation is available at that URL.
 #-------------------------------------------------------------------------
 
 sub _check_digit {
-  my $stem = shift;
-  my $sum = 0;
-  while ($stem) {
-    $sum += (chop $stem) * 3;
-    $sum += chop $stem;
-  }
-  my $mod = 10 - ($sum % 10);
-  return ($mod == 10) ? 0 : $mod;
+	my $stem = shift;
+	my $sum  = 0;
+	while ($stem) {
+		$sum += (chop $stem) * 3;
+		$sum += chop $stem;
+	}
+	my $mod = 10 - ($sum % 10);
+	return ($mod == 10) ? 0 : $mod;
 }
 
 =head2 valid_barcode
@@ -102,17 +103,17 @@ valid check-digit.
 #--------------------------------------------------------------------------
 # A barcode is deemed to be valid if the stem is 12 digits, and the 13th
 # digit is the expected check digit
-#-------------------------------------------------------------------------- 
+#--------------------------------------------------------------------------
 sub valid_barcode {
-  my $bcode = shift;
-  my $check_digit = chop($bcode); 
-  return 0 unless _valid_stem($bcode);
-  return ($check_digit == _check_digit($bcode));
+	my $bcode       = shift;
+	my $check_digit = chop($bcode);
+	return 0 unless _valid_stem($bcode);
+	return ($check_digit == _check_digit($bcode));
 }
 
 sub _valid_stem {
-  my $stem = shift;
-  return ($stem =~ /^\d{12}$/);
+	my $stem = shift;
+	return ($stem =~ /^\d{12}$/);
 }
 
 =head2 issuer_ccode
@@ -129,14 +130,15 @@ This does not test the validity of the barcode.
 =cut
 
 sub issuer_ccode {
-  my $bcode = shift;
-  # We should really build a hash lookup in the opposite direction here
-  build_prefix() unless %prefix;
+	my $bcode = shift;
 
-  foreach (keys %prefix) {
-    return $_ if (my @match = grep { $bcode =~ /^$_/ } @{$prefix{$_}});
-  }
-  return "";
+	# We should really build a hash lookup in the opposite direction here
+	build_prefix() unless %prefix;
+
+	foreach (keys %prefix) {
+		return $_ if (my @match = grep { $bcode =~ /^$_/ } @{ $prefix{$_} });
+	}
+	return "";
 }
 
 =head2 best_barcode
@@ -166,47 +168,48 @@ meet this final criterion.
 =cut
 
 sub best_barcode {
-  my $bref = shift;
-  my $pref_ref = shift || [];
-  build_prefix() unless %prefix;
-  my @prefs = map { @{ $prefix{$_} || [$_] } } @$pref_ref;  
+	my $bref = shift;
+	my $pref_ref = shift || [];
+	build_prefix() unless %prefix;
+	my @prefs = map { @{ $prefix{$_} || [$_] } } @$pref_ref;
 
-  my $best = "";
-  my @invalids;
-  BARCODE: foreach my $barcode (@$bref) {
-    unless (valid_barcode($barcode)) {
-      push @invalids => $barcode if (length $barcode < 13);
-      next BARCODE;
-    }
-    # if we have no conditions, then any valid match wins ...
-    return $barcode unless @prefs;
-    PREF: foreach my $pref (0 .. @prefs-1) {
-      next PREF unless ($barcode =~ /^$prefs[$pref]/);
-      return $barcode if ($pref == 0);
-      $best = $barcode;
-      splice @prefs, $pref;
-      next BARCODE;
-    }
-    $best = $barcode;
-  }
+	my $best = "";
+	my @invalids;
+	BARCODE: foreach my $barcode (@$bref) {
+		unless (valid_barcode($barcode)) {
+			push @invalids => $barcode if (length $barcode < 13);
+			next BARCODE;
+		}
 
-  # We have no valid matches, so check the invalids.
-  # We should really check the preferences again here,
-  # perhaps with something like:
-  #  return $best if $best;
-  #  return undef unless @invalids;
-  #  my @padded = map { sprintf "%013s", $_ }, @invalids;
-  #  return best_barcode(\@padded);
+		# if we have no conditions, then any valid match wins ...
+		return $barcode unless @prefs;
+		PREF: foreach my $pref (0 .. @prefs - 1) {
+			next PREF unless ($barcode =~ /^$prefs[$pref]/);
+			return $barcode if ($pref == 0);
+			$best = $barcode;
+			splice @prefs, $pref;
+			next BARCODE;
+		}
+		$best = $barcode;
+	}
 
-  unless ($best) {
-    foreach my $barcode (@invalids) {
-      $barcode = sprintf "%013s", $barcode;
-      next unless valid_barcode($barcode);
-      $best = $barcode;
-      last;
-    }
-  }
-  return $best || undef;
+	# We have no valid matches, so check the invalids.
+	# We should really check the preferences again here,
+	# perhaps with something like:
+	#  return $best if $best;
+	#  return undef unless @invalids;
+	#  my @padded = map { sprintf "%013s", $_ }, @invalids;
+	#  return best_barcode(\@padded);
+
+	unless ($best) {
+		foreach my $barcode (@invalids) {
+			$barcode = sprintf "%013s", $barcode;
+			next unless valid_barcode($barcode);
+			$best = $barcode;
+			last;
+		}
+	}
+	return $best || undef;
 }
 
 =head1 BUGS
@@ -220,8 +223,12 @@ Allow other barcode families than EAN-13
 
 =head1 AUTHOR
 
-Colm Dougan <colm@blackstar.co.uk> and Tony Bowden <tony@tmtm.com>.
-Comments should be made collectively to <barcode-ean13@tmtm.com>
+Colm Dougan and Tony Bowden 
+
+=head1 BUGS and QUERIES
+
+Please direct all correspondence regarding this module to:
+  bug-Business-Barcode-EAN13@rt.cpan.org
 
 =head1 LICENSE
 
@@ -236,7 +243,6 @@ EAN barcode specification: http://www.mecsw.com/specs/ean_13.html
 return q/
   i don't want the world i just want your half
 /;
-
 
 # Here lies the mapping data from country to barcode-prefix.
 __DATA__

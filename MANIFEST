@@ -1,5 +1,6 @@
 Changes
-Business/Barcode/EAN13.pm
+lib/Business/Barcode/EAN13.pm
 MANIFEST
 Makefile.PL
 t/01.t
+META.yml                                 Module meta-data (added by MakeMaker)

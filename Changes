@@ -1,5 +1,9 @@
 Revision history for Business::Barcode::EAN13.
 
+1.00  Tony Bowden, Wed Oct 27 2004
+	- Upped to major version number
+	- Tiny tweaks
+
 0.06  Tony Bowden, Sat Sep 1 2001
 	- Renamed to Business::Barcode::EAN13
 	- tests moved to Test::More
