@@ -33,12 +33,12 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT      = qw//;
 @EXPORT_OK   = qw/valid_barcode check_digit issuer_ccode best_barcode/;
 %EXPORT_TAGS = (all => [@EXPORT_OK]);
-$VERSION     = "1.00";
+$VERSION     = "1.01";
 
 # Private global HoL of country -> prefix lookup
 my %prefix;
 
-sub build_prefix {
+sub _build_prefix {
 	while (<DATA>) {
 		chomp;
 		my ($ccode, $prefix) = split(/:/, $_, 2);
@@ -133,7 +133,7 @@ sub issuer_ccode {
 	my $bcode = shift;
 
 	# We should really build a hash lookup in the opposite direction here
-	build_prefix() unless %prefix;
+	_build_prefix() unless %prefix;
 
 	foreach (keys %prefix) {
 		return $_ if (my @match = grep { $bcode =~ /^$_/ } @{ $prefix{$_} });
@@ -170,7 +170,7 @@ meet this final criterion.
 sub best_barcode {
 	my $bref = shift;
 	my $pref_ref = shift || [];
-	build_prefix() unless %prefix;
+	_build_prefix() unless %prefix;
 	my @prefs = map { @{ $prefix{$_} || [$_] } } @$pref_ref;
 
 	my $best = "";
