@@ -1,6 +1,6 @@
 
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 use Business::Barcode::EAN13 qw/:all/;
 
@@ -86,7 +86,8 @@ is check_digit("503069708024"), 0,  "zero checkdigit";
 # Add some tests for fall through to invalids ...
 
 # Test issuing country
-# only one valid barcode
 is issuer_ccode("5023965006028"), "uk", "issuing country: uk";
+is issuer_ccode("4303391576359"), "de", "issuing country: de";
+is issuer_ccode("4601620100277"), "ru", "issuing country: ru";
 is issuer_ccode("9999999999999"), "", "issuing country: n/a";
 

@@ -33,7 +33,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT      = qw//;
 @EXPORT_OK   = qw/valid_barcode check_digit issuer_ccode best_barcode/;
 %EXPORT_TAGS = (all => [@EXPORT_OK]);
-$VERSION     = "1.01";
+$VERSION     = "2.00";
 
 # Private global HoL of country -> prefix lookup
 my %prefix;
@@ -223,7 +223,7 @@ Allow other barcode families than EAN-13
 
 =head1 AUTHOR
 
-Colm Dougan and Tony Bowden 
+Colm Dougan, Tony Bowden and Jan Willamowius (http://www.ean-search.org)
 
 =head1 BUGS and QUERIES
 
@@ -254,7 +254,7 @@ hr:385
 ba:387
 de:400..440
 jp:45,49
-ru:430..439
+ru:460..469
 tw:471
 ee:474
 lv:475
