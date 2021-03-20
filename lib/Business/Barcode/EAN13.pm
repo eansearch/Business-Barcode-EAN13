@@ -223,20 +223,11 @@ Allow other barcode families than EAN-13
 
 =head1 AUTHOR
 
-Colm Dougan, Tony Bowden and Jan Willamowius (http://www.ean-search.org)
-
-=head1 BUGS and QUERIES
-
-Please direct all correspondence regarding this module to:
-  bug-Business-Barcode-EAN13@rt.cpan.org
+Colm Dougan, Tony Bowden and Jan Willamowius (https://www.ean-search.org)
 
 =head1 LICENSE
 
 This program may be distributed under the same license as Perl itself.
-
-=head1 SEE ALSO
-
-EAN barcode specification: http://www.mecsw.com/specs/ean_13.html
 
 =cut
 
@@ -257,6 +248,7 @@ ks:390
 de:400..440
 jp:45,49
 ru:460..469
+kg:470
 tw:471
 ee:474
 lv:475
@@ -267,13 +259,14 @@ lk:479
 ph:480
 by:481
 ua:482
+tm:483
 md:484
 am:485
 ge:486
 kz:487
 hk:489
 uk:50
-gr:520
+gr:520,521
 lb:528
 cy:529
 al:530
@@ -289,19 +282,29 @@ pl:590
 ro:594
 hu:599
 za:600,601
+gh:603
+sn:604
 ba:608
 mu:609
 ma:611
 dz:613
 ke:616
+ng:615
+ke:616
+cm:617
+ci:618
 tn:619
+tz:620
 sy:621
 eg:622
+bn:623
+ly:624
 jo:625
 ir:626
 kw:627
 sa:628
 ae:629
+qa:630
 fi:64
 cn:69
 no:70
@@ -315,13 +318,14 @@ cr:744
 pa:745
 do:746
 mx:750
+ca:754,755
 ve:759
 ch:76
-co:770
+co:770,771
 uy:773
 pe:775
 bo:777
-ar:779
+ar:778,779
 cl:780
 py:784
 ec:786
@@ -332,14 +336,18 @@ cu:850
 sk:858
 cz:859
 yu:860
+mn:865
 kp:867
 tr:868,869
 nl:87
 kr:880
+mm:883
+kh:884
 th:885
 sg:888
 in:890
 vn:893
+pk:896
 id:899
 at:90,91
 au:93
