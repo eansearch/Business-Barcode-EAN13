@@ -33,7 +33,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT      = qw//;
 @EXPORT_OK   = qw/valid_barcode check_digit issuer_ccode best_barcode/;
 %EXPORT_TAGS = (all => [@EXPORT_OK]);
-$VERSION     = "2.00";
+$VERSION     = "2.10";
 
 # Private global HoL of country -> prefix lookup
 my %prefix;
